@@ -1,0 +1,16 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog dbchangelog-3.2.xsd">
+    
+    <changeSet id="PRETEST" author="PRETEST">
+    	<tagDatabase tag="PRETEST"/>
+    </changeSet>
+
+    <changeSet id="PRETEST_DUMMY" author="PRETEST">
+    	<comment>We need to add a command after the tagging or the tag gets overwritten by the tagging in the scripts.</comment>
+    	<sql>SELECT * from DUAL</sql>
+    	<rollback />
+    </changeSet>
+    
+</databaseChangeLog>

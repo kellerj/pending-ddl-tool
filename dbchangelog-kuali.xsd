@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/dbchangelog-kuali"
+            xmlns="http://www.liquibase.org/xml/ns/dbchangelog-kuali"
+            elementFormDefault="qualified">
+
+	<!-- 
+	   - KEW Update Tags
+	   -
+	   -
+	   -
+	   -
+	   -
+	   -->
+
+    <xsd:element name="importWorkflow">
+        <xsd:complexType>
+	        <xsd:attribute name="fileName" type="xsd:string"/>
+	        <xsd:attribute name="directoryName" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+	<!-- 
+	   - Common Types
+	   -
+	   -
+	   -
+	   -
+	   -
+	   -->
+
+	<xsd:simpleType name="namespaceType">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20" />
+			<xsd:pattern value="[a-zA-Z0-9-]+"/>
+			<xsd:whiteSpace value="collapse"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="riceIdentifierString">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="40" />
+			<xsd:whiteSpace value="collapse"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="riceNameString">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="80" />
+			<xsd:whiteSpace value="replace"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="riceDescriptionString">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="4000" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:attributeGroup name="roleIdentifier">
+        <xsd:attribute name="roleNamespaceCode" type="namespaceType" use="required"/>
+        <xsd:attribute name="roleName" type="riceNameString" use="required"/>
+    </xsd:attributeGroup>
+
+	<xsd:attributeGroup name="roleMemberIdentifier">
+        <xsd:attribute name="memberType"      type="RoleMemberType" use="required"/>
+        <xsd:attribute name="memberName"      type="riceNameString" use="required"/>
+        <xsd:attribute name="memberNamespace" type="namespaceType"  use="optional"/>
+    </xsd:attributeGroup>
+
+    <xsd:simpleType name="WorkflowActionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="APPROVE" />
+            <xsd:enumeration value="ACKNOWLEDGE" />
+            <xsd:enumeration value="FYI" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="RoleMemberType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PERSON" />
+            <xsd:enumeration value="ROLE" />
+            <xsd:enumeration value="GROUP" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+	<!-- 
+	   - KIM Refactoring Tags
+	   -
+	   -
+	   -
+	   -
+	   -
+	   -->
+
+	<!-- 
+		KIM Type Tags
+		 -->
+    <xsd:element name="createKimType">
+        <xsd:complexType>
+	        <xsd:sequence>
+	        	<xsd:element name="kimAttribute" minOccurs="0" maxOccurs="unbounded">
+	        		<xsd:complexType>
+	        			<xsd:attribute name="name" type="riceNameString" use="required" />
+	        		</xsd:complexType>
+	        	</xsd:element>
+	        </xsd:sequence>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+	        <xsd:attribute name="serviceName" type="xsd:string" />
+	        <xsd:attribute name="typeId" type="riceIdentifierString" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deleteKimType">
+        <xsd:complexType>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+	<!-- 
+		Role Tags
+		 -->
+
+    <xsd:element name="createRole">
+        <xsd:complexType>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+	        <xsd:attribute name="roleTypeNamespace" type="namespaceType" default="KUALI"/>
+	        <xsd:attribute name="roleTypeName" type="riceNameString" default="Default"/>
+	        <xsd:attribute name="roleDescription" type="riceDescriptionString" />
+	        <xsd:attribute name="roleId" type="riceIdentifierString" />
+        </xsd:complexType>
+    </xsd:element>
+
+	<xsd:complexType name="KimAttributeType">
+        <xsd:attribute name="name" type="riceNameString" use="required" />
+        <xsd:attribute name="value" type="riceDescriptionString" use="required" />
+	</xsd:complexType>
+
+    <xsd:element name="addRoleMember">
+        <xsd:complexType>
+        	<xsd:sequence>
+        		<xsd:element name="attribute" type="KimAttributeType" minOccurs="0" maxOccurs="unbounded" />
+        	</xsd:sequence>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+        	<xsd:attributeGroup ref="roleMemberIdentifier"/>
+        	<xsd:attribute name="activeDate" type="xsd:date" />
+        	<xsd:attribute name="inactiveDate" type="xsd:date" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deleteRoleMember">
+        <xsd:complexType>
+        	<xsd:sequence>
+        		<xsd:element name="attribute" type="KimAttributeType" minOccurs="0" maxOccurs="unbounded" />
+        	</xsd:sequence>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+        	<xsd:attributeGroup ref="roleMemberIdentifier"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="inactivateRoleMember">
+        <xsd:complexType>
+        	<xsd:sequence>
+        		<xsd:element name="attribute" type="KimAttributeType" minOccurs="0" maxOccurs="unbounded" />
+        	</xsd:sequence>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+        	<xsd:attributeGroup ref="roleMemberIdentifier"/>
+        	<xsd:attribute name="inactiveDate" type="xsd:date" />
+        </xsd:complexType>
+    </xsd:element>
+
+	<!-- 
+		Responsibility Tags
+		 -->
+    <xsd:element name="createResponsibility">
+        <xsd:complexType>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+	        <xsd:attribute name="description" type="riceDescriptionString" />
+	        <xsd:attribute name="responsibilityId" type="riceIdentifierString" use="optional"/> 
+	        <xsd:attribute name="documentType" type="riceNameString" use="required" />
+	        <xsd:attribute name="routeNode" type="riceNameString" use="required" />
+	        <xsd:attribute name="routingRequired" type="xsd:boolean" default="false" />
+	        <xsd:attribute name="actionDetailsAtRowMemberLevel" type="xsd:boolean" default="false" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deleteResponsibility">
+        <xsd:complexType>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="assignResponsibility">
+        <xsd:complexType>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS" />
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+	        <xsd:attribute name="documentType" type="riceNameString" use="required" />
+	        <xsd:attribute name="routeNode" type="riceNameString" use="required" />
+	        <xsd:attribute name="actionType" type="WorkflowActionType" use="optional" default="APPROVE" />
+	        <xsd:attribute name="forceAction" type="xsd:boolean" default="false" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deleteResponsibilityAssignment">
+        <xsd:complexType>
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+	        <xsd:attribute name="documentType" type="riceNameString" use="required" />
+	        <xsd:attribute name="routeNode" type="riceNameString" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+	<!-- 
+		Permission Tags
+		 -->
+
+    <xsd:element name="createPermission">
+        <xsd:complexType>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS" />
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+	        <xsd:attribute name="permissionTemplateNamespaceCode" type="namespaceType" use="optional" default="KUALI"/>
+	        <xsd:attribute name="permissionTemplateName" type="riceNameString" use="optional" default="Default" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deletePermission">
+        <xsd:complexType>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="assignPermission">
+        <xsd:complexType>
+        	<xsd:attribute name="applicationId" type="namespaceType" default="KFS" />
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="deletePermissionAssignment">
+        <xsd:complexType>
+        	<xsd:attributeGroup ref="roleIdentifier"/>
+	        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+	        <xsd:attribute name="name" type="riceNameString" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+	<!-- 
+	   - KNS Update Tags
+	   -
+	   -
+	   -
+	   -
+	   -
+	   -->
+
+	<xsd:simpleType name="componentType">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="100" />
+			<xsd:whiteSpace value="collapse"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="parameterNameType">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="255" />
+			<xsd:whiteSpace value="collapse"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+    <xsd:simpleType name="ParameterTypeType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CONFG" />
+            <xsd:enumeration value="VALID" />
+            <xsd:enumeration value="HELP" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ParameterOperatorType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ALLOW" />
+            <xsd:enumeration value="DENY" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+	<xsd:attributeGroup name="parameterIdentifier">
+       	<xsd:attribute name="applicationId" type="namespaceType" default="KFS"/>
+        <xsd:attribute name="namespaceCode" type="namespaceType" use="required"/>
+        <xsd:attribute name="component" type="componentType" use="required"/>
+        <xsd:attribute name="name" type="parameterNameType" use="required"/>
+    </xsd:attributeGroup>
+
+    <xsd:element name="createParameter">
+        <xsd:complexType>
+        	<xsd:attributeGroup ref="parameterIdentifier"/>
+	        <xsd:attribute name="value" type="xsd:string" use="required" />
+	        <xsd:attribute name="parameterTypeCode" type="ParameterTypeType" default="CONFG" />
+	        <xsd:attribute name="operator" type="ParameterOperatorType" default="ALLOW" />
+	        <xsd:attribute name="description" type="riceDescriptionString" />
+        </xsd:complexType>
+    </xsd:element>
+
+
+<!-- 
+    <xsd:attributeGroup name="constraintState">
+        <xsd:attribute name="disable" type="xsd:boolean"/>
+        <xsd:attribute name="deferrable" type="xsd:boolean"/>
+        <xsd:attribute name="initiallyDeferred" type="xsd:boolean"/>
+        <xsd:attribute name="validate" type="xsd:boolean"/>
+        <xsd:attribute name="rely" type="xsd:boolean"/>
+    </xsd:attributeGroup>
+
+    <xsd:element name="addCheck">
+        <xsd:complexType>
+            <xsd:attributeGroup ref="tableAttribute"/>
+            <xsd:attributeGroup ref="checkAttribute"/>
+            <xsd:attributeGroup ref="constraintState"/>
+        </xsd:complexType>
+    </xsd:element>
+
+
+    <xsd:simpleType name="triggerActionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="before"></xsd:enumeration>
+            <xsd:enumeration value="after"></xsd:enumeration>
+            <xsd:enumeration value="instead of"></xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+ -->
+
+</xsd:schema>
